@@ -15,10 +15,10 @@ class expert:
     self.value_array = value_array
     self.weight=1  
   
-  def get_weight():
+  def get_weight(self):
     return self.weight
   ## returns error value of expert at a given time 
-  def get_value(i):
+  def get_value(self,i):
     return self.value_array[i]
   ## a hello message from our dear Mr. expert
   def print_info(self):
@@ -41,6 +41,7 @@ def init_expert():
   for i in range(0,30):   
     experts_list.append(expert(expert_value_array[i]))
     experts_list[i].print_info()
+    
     
 
 
