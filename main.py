@@ -1,5 +1,8 @@
 import csv
 import random
+import os
+import sys
+
 
 ##list that stores experts
 experts_list=[]
@@ -30,14 +33,19 @@ class expert:
 ## create the bounds for each expert
 def init_expert():
   expert_value_array = []
-  with open("Milano_timeseries.csv", 'r') as file:
+  with open(os.path.join(sys.path[0], "Milano_timeseries.csv"), "r") as file:
     csvreader = csv.reader(file)
     for row in csvreader:
         expert_value_array.append(row)
   
-  for i in range(0,29):   
+  for i in range(0,30):   
     experts_list.append(expert(expert_value_array[i]))
     experts_list[i].print_info()
+    
+
+
+
+
 
 ## returns index of expert with best mui
 def find_optimal_expert_index():
