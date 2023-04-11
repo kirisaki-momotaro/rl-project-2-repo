@@ -82,16 +82,22 @@ def discount_weights(time):
 def choose_expert():
   return random.choices(experts_list, weights = create_probabilities_array(), k = 1)[0]
 
-
+def minimum(time):
+  min=math.inf
+  for i in range(0,30):
+    exp_val=experts_list[i].get_value(time)
+    if(exp_val<min):min=exp_val
+  return min
 
 ## WMR
 def WMR():
   for i in range(1,T):    
     chosen_expert=choose_expert()      
     ## calculate regret    
-    value=chosen_expert.get_value(i)
-    print(value)
-    regret[i] = value/(i+1)  
+    value=chosen_expert.get_value(i)  
+    minimum_value=minimum(i)  
+    regret[i] = value-minimum_value/(i+1) 
+    print(regret[i]) 
     discount_weights(i)
 
 
