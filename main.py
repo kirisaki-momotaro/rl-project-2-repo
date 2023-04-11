@@ -24,12 +24,7 @@ class expert:
   def print_info(self):
     print(f"Hi im a expert with ={self.weight} yoroshiku!!.")
 
-
-
-
-    
-
-
+ 
 ## create the bounds for each expert
 def init_expert():
   expert_value_array = []
@@ -49,21 +44,32 @@ def init_expert():
 
 
 ## returns index of expert with best mui
-def find_optimal_expert_index():
-    max_value=0
-    max_index=-1
+def total_expert_weight():
+    total_weight=0    
     for i in range(30):
-      m=experts_list[i].mu_i()
-      if(m>max_value):
-        max_value=m
-        max_index=i
-    return max_index
+      total_weight=total_weight + experts_list[i].get_weight()
+      
+    return total_weight
+def create_probabilities_array():
+  probablilties_array=[]
+  total_weight=total_expert_weight()
+  for i in range(0,30):
+    probablilties_array.append(experts_list[i].get_weight()/total_weight)
+  return probablilties_array
 
+
+
+
+def choose_expert():
+  return random.choices(experts_list, weights = create_probabilities_array(), k = 1)[0]
 
 def main():
   
   init_expert()
- # optimal_MAB_index= find_optimal_expert_index() #index of the arm with best returns
+  print ("heyyy")
+  choose_expert().print_info()
+  
+ 
   
   
   
