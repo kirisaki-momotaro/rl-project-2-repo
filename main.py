@@ -68,8 +68,11 @@ def create_probabilities_array():
     probablilties_array.append(experts_list[i].get_weight()/total_weight)      
   return probablilties_array
 
-def heta():  
-    heta=math.sqrt(math.log(30)/T)   
+def heta(time):  
+    #heta=math.sqrt(math.log(30)/T)   
+    #heta=0.001*time
+    #heta=1/math.sqrt(time+1)
+    heta=0.5
     return heta
     
  
@@ -78,7 +81,7 @@ def discount_weights(time):
   for i in range(0,30):
     old_weight=experts_list[i].get_weight()
     loss=experts_list[i].get_value(time)      
-    new_weight= pow(1-heta(),loss)*old_weight
+    new_weight= pow(1-heta(time),loss)*old_weight
     experts_list[i].weight=new_weight
 
 
