@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 
 T = 1000 #horizon 
 regret =  np.zeros((T,)) #regret for round t
+alg_score = np.zeros((T,)) #cumulative loss for round t
+opt_alg_score = np.zeros((T,)) #cumulative loss for round t
 
 ##list that stores experts
 experts_list=[]
@@ -67,7 +69,9 @@ def create_probabilities_array():
   return probablilties_array
 
 def heta():  
-    return math.sqrt(math.log(30)/T)
+    heta=math.sqrt(math.log(30)/T)   
+    return heta
+    
  
 
 def discount_weights(time):
@@ -96,8 +100,13 @@ def WMR():
     ## calculate regret    
     value=chosen_expert.get_value(i)  
     minimum_value=minimum(i)  
-    regret[i] = value-minimum_value/(i+1) 
-    print(regret[i]) 
+
+    if i > 1: alg_score[i] = alg_score[i-1] + value #vector keeping track of cummulative explore-then-eploit reward at all times 
+    else: alg_score[i] = value 
+    if i > 1: opt_alg_score[i] = opt_alg_score[i-1] + minimum_value #vector keeping track of cummulative explore-then-eploit reward at all times 
+    else: opt_alg_score[i] = minimum_value 
+    regret[i] = (alg_score[i]-opt_alg_score[i-1])/(i+1) 
+    #print(regret[i]) 
     discount_weights(i)
 
 
@@ -123,6 +132,8 @@ def WMR():
 def main():  
   init_expert()  
   WMR()
+  for i in range(0,30):
+    print(experts_list[i].weight)
 
 
 
