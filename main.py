@@ -65,7 +65,7 @@ def create_probabilities_array():
   probablilties_array=[]
   total_weight=total_expert_weight()
   for i in range(0,30):
-    probablilties_array.append(experts_list[i].get_weight()/total_weight)      
+    probablilties_array.append(experts_list[i].get_weight()/total_weight)        
   return probablilties_array
 
 def heta(time):  
@@ -83,6 +83,30 @@ def discount_weights(time):
     loss=experts_list[i].get_value(time)      
     new_weight= pow(1-heta(time),loss)*old_weight
     experts_list[i].weight=new_weight
+
+def discount_weights_bandit(time,chosen_expert):
+  for i in range(0,30):
+    old_weight=experts_list[i].get_weight()
+    chosen_value=chosen_expert.get_value(time)
+    
+    p_expert=create_probabilities_array()[i]
+    
+    #print(old_weight)
+    if(experts_list[i]==chosen_expert):
+      loss=chosen_value
+      
+    else:  
+      if(p_expert==0) :
+        loss=0
+      else:
+        loss=chosen_value/p_expert
+     
+
+    new_weight= pow(1-heta(time),loss)*old_weight
+    #if(new_weight==0):
+      #print(f"{new_weight} ;; {old_weight} ;;{loss}")
+    experts_list[i].weight=new_weight
+
 
 
 #returns the chosen expert
@@ -111,8 +135,28 @@ def WMR():
     regret[i] = (alg_score[i]-opt_alg_score[i-1])/(i+1) 
     #print(regret[i]) 
     discount_weights(i)
+    #discount_weights_bandit(i,chosen_expert)
+  plt.title("WMR Performance") 
+  plt.xlabel("Round T") 
+  plt.ylabel("Total score") 
+  plt.plot(np.arange(1,T+1),regret) 
+  plt.show()  
+  
+def WMR_bandit():
+  for i in range(1,T):    
+    chosen_expert=choose_expert()      
+    ## calculate regret    
+    value=chosen_expert.get_value(i)  
+    minimum_value=minimum(i)  
 
-
+    if i > 1: alg_score[i] = alg_score[i-1] + value #vector keeping track of cummulative explore-then-eploit reward at all times 
+    else: alg_score[i] = value 
+    if i > 1: opt_alg_score[i] = opt_alg_score[i-1] + minimum_value #vector keeping track of cummulative explore-then-eploit reward at all times 
+    else: opt_alg_score[i] = minimum_value 
+    regret[i] = (alg_score[i]-opt_alg_score[i-1])/(i+1) 
+    #print(regret[i]) 
+    #discount_weights(i)
+    discount_weights_bandit(i,chosen_expert)
 
 
   plt.title("WMR Performance") 
@@ -133,8 +177,9 @@ def WMR():
 
 
 def main():  
-  init_expert()  
-  WMR()
+  init_expert() 
+  #WMR() 
+  WMR_bandit()
   for i in range(0,30):
     print(experts_list[i].weight)
 
