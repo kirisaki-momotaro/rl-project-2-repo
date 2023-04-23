@@ -50,10 +50,6 @@ def expert_reset_weight():
   for expert in experts_list:
     expert.weight=1
 
-
-
-
-
 ## returns the total expert weight
 def total_expert_weight():
     total_weight=0    
@@ -62,7 +58,7 @@ def total_expert_weight():
       
     return total_weight
 
-#returns the choose probabilities of al experts
+#returns the choose probabilities of all experts
 def create_probabilities_array():
   probablilties_array=[]
   total_weight=total_expert_weight()
@@ -115,6 +111,7 @@ def discount_weights_bandit(time,chosen_expert):
 def choose_expert():
   return random.choices(experts_list, weights = create_probabilities_array(), k = 1)[0]
 
+#returns the value of the expert with the smallest loss for a specific time from the inputed data
 def minimum(time):
   min=math.inf
   for i in range(0,30):
@@ -143,7 +140,9 @@ def WMR():
   plt.ylabel("Total score") 
   plt.plot(np.arange(1,T+1),regret) 
   plt.show()  
-  
+
+
+#estimates the loos for the not used experts
 def WMR_bandit():
   for i in range(1,T):    
     chosen_expert=choose_expert()      
@@ -181,9 +180,13 @@ def WMR_bandit():
 def main():  
   init_expert() 
   WMR() 
-  #WMR_bandit()
   for i in range(0,30):
     print(experts_list[i].weight)
+  expert_reset_weight()
+  WMR_bandit()
+  for i in range(0,30):
+    print(experts_list[i].weight)
+  
 
 
 
