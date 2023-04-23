@@ -46,7 +46,9 @@ def init_expert():
     experts_list.append(expert(expert_value_array[i]))
     experts_list[i].print_info()
     
-    
+def expert_reset_weight():
+  for expert in experts_list:
+    expert.weight=1
 
 
 
@@ -65,7 +67,7 @@ def create_probabilities_array():
   probablilties_array=[]
   total_weight=total_expert_weight()
   for i in range(0,30):
-    probablilties_array.append(experts_list[i].get_weight()/total_weight)        
+    probablilties_array.append(experts_list[i].get_weight()/total_weight)         
   return probablilties_array
 
 def heta(time):  
@@ -178,8 +180,8 @@ def WMR_bandit():
 
 def main():  
   init_expert() 
-  #WMR() 
-  WMR_bandit()
+  WMR() 
+  #WMR_bandit()
   for i in range(0,30):
     print(experts_list[i].weight)
 
