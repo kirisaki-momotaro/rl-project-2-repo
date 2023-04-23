@@ -68,7 +68,7 @@ def create_probabilities_array():
 
 def heta(time):  
     heta=np.sqrt(np.log(time)/(time+1))
-    ##print(heta)
+    #print(heta)
     #heta=math.sqrt(math.log(30)/T)   
     #heta=0.001*time
     #heta=1/math.sqrt(time+1)
