@@ -67,10 +67,12 @@ def create_probabilities_array():
   return probablilties_array
 
 def heta(time):  
+    heta=np.sqrt(np.log(time)/(time+1))
+    ##print(heta)
     #heta=math.sqrt(math.log(30)/T)   
     #heta=0.001*time
     #heta=1/math.sqrt(time+1)
-    heta=0.5
+    #heta=0.5
     return heta
     
  
