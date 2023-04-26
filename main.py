@@ -66,10 +66,13 @@ def create_probabilities_array():
     probablilties_array.append(experts_list[i].get_weight()/total_weight)         
   return probablilties_array
 
+def epsilon():
+  epsilon=0.01
+  return epsilon
 def heta(time):  
-    heta=np.sqrt(np.log(time)/(time+1))
+    #heta=np.sqrt(np.log(time)/(time+1))
     #print(heta)
-    #heta=math.sqrt(math.log(30)/T)   
+    heta=math.sqrt(math.log(30)/T)   
     #heta=0.001*time
     #heta=1/math.sqrt(time+1)
     #heta=0.5
@@ -89,29 +92,44 @@ def discount_weights_bandit(time,chosen_expert):
     old_weight=experts_list[i].get_weight()
     chosen_value=chosen_expert.get_value(time)
     
-    p_expert=create_probabilities_array()[i]
+    q_expert=create_probabilities_array_bandits()[i]
     
     #print(old_weight)
     if(experts_list[i]==chosen_expert):
-      loss=chosen_value
+      loss=chosen_value/q_expert
+      new_weight= pow(1-heta(time),loss)*old_weight
+      experts_list[i].weight=new_weight
       
-    else:  
-      if(p_expert==0) :
-        loss=0
-      else:
-        loss=chosen_value/p_expert
+    #else:  
+    #  if(p_expert==0) :
+    #    loss=0
+    #  else:
+    #    loss=chosen_value/p_expert
      
 
-    new_weight= pow(1-heta(time),loss)*old_weight
+    
     #if(new_weight==0):
       #print(f"{new_weight} ;; {old_weight} ;;{loss}")
-    experts_list[i].weight=new_weight
+    
 
 
 
 #returns the chosen expert
 def choose_expert():
   return random.choices(experts_list, weights = create_probabilities_array(), k = 1)[0]
+
+
+def create_probabilities_array_bandits():
+  prob_array=create_probabilities_array()
+  for p in prob_array:
+    q= (1-epsilon())*p + (epsilon/30)
+    p=q
+  return prob_array
+
+def choose_expert_bandits():
+  return random.choices(experts_list, weights = create_probabilities_array_bandits(), k = 1)[0]
+
+
 
 #returns the value of the expert with the smallest loss for a specific time from the inputed data
 def minimum(time):
@@ -147,10 +165,10 @@ def WMR():
 #estimates the loos for the not used experts
 def WMR_bandit():
   for i in range(1,T):    
-    chosen_expert=choose_expert()      
+    chosen_expert=choose_expert_bandits()      
     ## calculate regret    
     value=chosen_expert.get_value(i)  
-    minimum_value=minimum(i)  
+    minimum_value=minimum(i)  #get the best case for regret calculation
 
     if i > 1: alg_score[i] = alg_score[i-1] + value #vector keeping track of cummulative explore-then-eploit reward at all times 
     else: alg_score[i] = value 
