@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 
 T = 1000 #horizon 
+ro=0
 regret =  np.zeros((T,)) #regret for round t
 alg_score = np.zeros((T,)) #cumulative loss for round t
 opt_alg_score = np.zeros((T,)) #cumulative loss for round t
@@ -67,7 +68,8 @@ def create_probabilities_array():
   return probablilties_array
 
 def epsilon():
-  epsilon=0.01
+  #epsilon=0.01
+  epsilon=ro
   return epsilon
 def heta(time):  
     #heta=np.sqrt(np.log(time)/(time+1))
@@ -110,8 +112,32 @@ def discount_weights_bandit(time,chosen_expert):
     
     #if(new_weight==0):
       #print(f"{new_weight} ;; {old_weight} ;;{loss}")
+def minimum_weight():
+  min=math.inf
+  for i in range(0,30):
+    exp_weight=experts_list[i].get_weight()
+    if(exp_weight<min):min=exp_weight
+  return min
+def discount_weights_bandit_black_box(time,chosen_expert):
+  for i in range(0,30):
+    old_weight=experts_list[i].get_weight()
+    chosen_value=chosen_expert.get_value(time)
     
+    p_expert=create_probabilities_array_bandits()[i]
+    
+    #print(old_weight)
+    if(experts_list[i]==chosen_expert):
+      loss=chosen_value/p_expert
+      new_weight= pow(1-heta(time),loss)*old_weight
+      experts_list[i].weight=new_weight
 
+def calc_ro_black_box():
+  for i in range(1,T):    
+    chosen_expert=choose_expert_bandits()     
+    discount_weights_bandit(i,chosen_expert)
+  ro=minimum_weight()
+  expert_reset_weight()
+  return ro
 
 
 #returns the chosen expert
@@ -122,7 +148,7 @@ def choose_expert():
 def create_probabilities_array_bandits():
   prob_array=create_probabilities_array()
   for p in prob_array:
-    q= (1-epsilon())*p + (epsilon/30)
+    q= (1-epsilon())*p + (epsilon()/30)
     p=q
   return prob_array
 
@@ -138,6 +164,8 @@ def minimum(time):
     exp_val=experts_list[i].get_value(time)
     if(exp_val<min):min=exp_val
   return min
+
+
 
 ## WMR
 def WMR():
@@ -203,6 +231,8 @@ def main():
   for i in range(0,30):
     print(experts_list[i].weight)
   expert_reset_weight()
+  ro=calc_ro_black_box()
+  print(f"ro={ro}")
   WMR_bandit()
   for i in range(0,30):
     print(experts_list[i].weight)
