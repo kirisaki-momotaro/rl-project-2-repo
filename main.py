@@ -250,6 +250,28 @@ def UCB_algorithm():
 
 def main():  
   init_expert() 
+
+  WMR() 
+  for i in range(0,30):
+    print(experts_list[i].weight)
+  expert_reset_weight()
+  
+  WMR_bandit()
+  for i in range(0,30):
+    print(experts_list[i].weight)    
+  expert_reset_weight()
+
+  UCB_algorithm()
+
+  global T
+  T=7000
+  global regret 
+  regret =  np.zeros((T,)) #regret for round t
+  global alg_score 
+  alg_score = np.zeros((T,)) #cumulative loss for round t
+  global opt_alg_score 
+  opt_alg_score = np.zeros((T,)) #cumulative loss for round t
+  
   WMR() 
   for i in range(0,30):
     print(experts_list[i].weight)
