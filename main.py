@@ -151,7 +151,7 @@ def minimum(time):
 
 
 ## WMR
-def WMR():
+def WMR(plot_placement):
   for i in range(1,T):    
     chosen_expert=choose_expert()      
     ## calculate regret    
@@ -166,15 +166,16 @@ def WMR():
     #print(regret[i]) 
     discount_weights(i)
     #discount_weights_bandit(i,chosen_expert)
-  plt.title("WMR Performance") 
+  plt.subplot(2, 3, plot_placement)
+  plt.title(f"MW Performance T={T} ") 
   plt.xlabel("Round T") 
   plt.ylabel("Total score") 
   plt.plot(np.arange(1,T+1),regret) 
-  plt.show()  
+  
 
 
 #estimates the loos for the not used experts
-def WMR_bandit():
+def WMR_bandit(plot_placement):
   for i in range(1,T):    
     chosen_expert=choose_expert_bandits()      
     ## calculate regret    
@@ -190,13 +191,12 @@ def WMR_bandit():
     #discount_weights(i)
     discount_weights_bandit(i,chosen_expert)
 
-
-  plt.title("WMR Performance") 
+  plt.subplot(2, 3, plot_placement)
+  plt.title(f"MW Bandit Performance T={T} ") 
   plt.xlabel("Round T") 
   plt.ylabel("Total score") 
   plt.plot(np.arange(1,T+1),regret) 
-  plt.show()  
-
+  
 
 
  
@@ -215,7 +215,7 @@ def UCB(time):
  
 
 ## UCB
-def UCB_algorithm():
+def UCB_algorithm(plot_placement):
   for i in range(1,T):
       ## pick best arm
       best_arm_index=UCB(i) ## get the bandit index to pull
@@ -230,12 +230,12 @@ def UCB_algorithm():
       else: opt_alg_score[i] = (1-minimum_value)
       regret[i] = (opt_alg_score[i]-alg_score[i])/(i+1)       
       
-
-  plt.title("UCB Performance") 
+  plt.subplot(2, 3, plot_placement)
+  plt.title(f"UCB Performance T={T} ")  
   plt.xlabel("Round T") 
   plt.ylabel("Total score") 
   plt.plot(np.arange(1,T+1),regret) 
-  plt.show()  
+  
 
 
 
@@ -251,17 +251,17 @@ def UCB_algorithm():
 def main():  
   init_expert() 
 
-  WMR() 
+  WMR(1) 
   for i in range(0,30):
     print(experts_list[i].weight)
   expert_reset_weight()
   
-  WMR_bandit()
+  WMR_bandit(2)
   for i in range(0,30):
     print(experts_list[i].weight)    
   expert_reset_weight()
 
-  UCB_algorithm()
+  UCB_algorithm(3)
 
   global T
   T=7000
@@ -271,19 +271,19 @@ def main():
   alg_score = np.zeros((T,)) #cumulative loss for round t
   global opt_alg_score 
   opt_alg_score = np.zeros((T,)) #cumulative loss for round t
-  
-  WMR() 
+
+  WMR(4) 
   for i in range(0,30):
     print(experts_list[i].weight)
   expert_reset_weight()
   
-  WMR_bandit()
+  WMR_bandit(5)
   for i in range(0,30):
     print(experts_list[i].weight)    
   expert_reset_weight()
 
-  UCB_algorithm()
-
+  UCB_algorithm(6)
+  plt.show()
 
 if __name__=="__main__":
    main()
