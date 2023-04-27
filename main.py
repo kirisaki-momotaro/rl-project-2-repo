@@ -16,6 +16,9 @@ opt_alg_score = np.zeros((T,)) #cumulative loss for round t
 ##list that stores experts
 experts_list=[]
 
+#for use in UCB
+bandit_score = np.zeros((30,)) #total score of each arm for first N rounds
+pulls = np.zeros((30,))
 
 ## class that defines a expert and its basic functions
 class expert:  
@@ -197,7 +200,47 @@ def WMR_bandit():
 
 
  
+## UCB returns index of MAB to select
+def UCB(time):
+  best_ucb=0
+  selected_MAB_index=-1
+  for i in range(30):
+    ucb=(bandit_score[i]/(pulls[i]+1)) + math.sqrt(np.log(time)/(pulls[i]+1)) ## the formula from the class powerpoint
+    if(ucb>best_ucb):
+      best_ucb=ucb
+      selected_MAB_index=i
+  return selected_MAB_index
 
+
+ 
+
+## UCB
+def UCB_algorithm():
+  for i in range(1,T):
+      ## pick best arm
+      best_arm_index=UCB(i) ## get the bandit index to pull
+      turn_value = experts_list[best_arm_index].get_value(i) ##pull bandit
+      bandit_score[best_arm_index] = (1-turn_value) + bandit_score[best_arm_index] ##add up score of bandit
+      pulls[best_arm_index] = pulls[best_arm_index] +1 ##add up pulls
+      minimum_value=minimum(i) 
+
+      if i > 1: alg_score[i] = alg_score[i-1] + (1-turn_value) #vector keeping track of cummulative explore-then-eploit reward at all times 
+      else: alg_score[i] = (1-turn_value)
+      if i > 1: opt_alg_score[i] = opt_alg_score[i-1] + (1-minimum_value) #vector keeping track of cummulative explore-then-eploit reward at all times 
+      else: opt_alg_score[i] = (1-minimum_value)
+      regret[i] = (opt_alg_score[i]-alg_score[i])/(i+1)       
+      
+
+  plt.title("UCB Performance") 
+  plt.xlabel("Round T") 
+  plt.ylabel("Total score") 
+  plt.plot(np.arange(1,T+1),regret) 
+  plt.show()  
+
+
+
+  
+  
 
 
 
@@ -214,9 +257,10 @@ def main():
   
   WMR_bandit()
   for i in range(0,30):
-    print(experts_list[i].weight)
-  
+    print(experts_list[i].weight)    
+  expert_reset_weight()
 
+  UCB_algorithm()
 
 
 if __name__=="__main__":
