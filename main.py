@@ -1,3 +1,5 @@
+##author: Christos Ioannidis AM:2018030006
+
 import csv
 import random
 import os
